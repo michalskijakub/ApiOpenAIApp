@@ -1,7 +1,7 @@
 import openai
 import os
 
-openai.api_key = "API_Key"
+openai.api_key = "api_key"
 
 def read_article(file_path):
     with open(file_path, "r", encoding="utf-8") as file:
@@ -24,7 +24,7 @@ def process_article_with_openai(article_text):
     response = openai.Completion.create(
     engine="gpt-3.5-turbo-instruct",
     prompt=prompt,
-    max_tokens=1500,
+    max_tokens=1600,
     temperature=0.7
     )
     return response.choices[0].text.strip()
@@ -32,6 +32,157 @@ def process_article_with_openai(article_text):
 def save_html_file(file_path, html_content):
     with open(file_path, "w", encoding="utf-8") as file:
         file.write(html_content)
+
+def create_template():
+    template_html = """
+    <!DOCTYPE html>
+    <html lang="pl">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Podgląd Artykułu</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            body {
+                font-family: 'Roboto', sans-serif;
+                line-height: 1.8;
+                margin: 20px;
+                background: linear-gradient(135deg, #e0f7fa, #fff);
+                color: #212529;
+            }
+            h1 {
+                color: #007bff;
+                text-align: center;
+                font-size: 2.5em;
+                margin-bottom: 20px;
+                text-shadow: 1px 1px 2px #ccc;
+            }
+            h2 {
+                color: #17a2b8;
+                border-left: 5px solid #17a2b8;
+                padding-left: 10px;
+                margin-top: 20px;
+                margin-bottom: 10px;
+            }
+            p {
+                font-size: 1.1em;
+                text-align: justify;
+                margin-bottom: 15px;
+            }
+            img {
+                display: block;
+                max-width: 90%;
+                height: auto;
+                margin: 20px auto;
+                border: 5px solid #17a2b8;
+                border-radius: 10px;
+                box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            }
+            figcaption {
+                text-align: center;
+                font-size: 0.9em;
+                color: #6c757d;
+                font-style: italic;
+                margin-top: -10px;
+            }
+            ul {
+                padding-left: 20px;
+            }
+            ul li {
+                margin-bottom: 10px;
+                color: #343a40;
+            }
+            footer {
+                text-align: center;
+                margin-top: 40px;
+                font-size: 0.9em;
+                color: #6c757d;
+            }
+        </style>
+    </head>
+    <body>
+    </body>
+    </html>
+    """
+    with open("szablon.html", "w", encoding="utf-8") as file:
+        file.write(template_html)
+
+
+def create_preview(article_html):
+    preview_html = f"""
+    <!DOCTYPE html>
+    <html lang="pl">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Podgląd Artykułu</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            body {{
+                font-family: 'Roboto', sans-serif;
+                line-height: 1.8;
+                margin: 20px;
+                background: linear-gradient(135deg, #e0f7fa, #fff);
+                color: #212529;
+            }}
+            h1 {{
+                color: #007bff;
+                text-align: center;
+                font-size: 2.5em;
+                margin-bottom: 20px;
+                text-shadow: 1px 1px 2px #ccc;
+            }}
+            h2 {{
+                color: #17a2b8;
+                border-left: 5px solid #17a2b8;
+                padding-left: 10px;
+                margin-top: 20px;
+                margin-bottom: 10px;
+            }}
+            p {{
+                font-size: 1.1em;
+                text-align: justify;
+                margin-bottom: 15px;
+            }}
+            img {{
+                display: block;
+                max-width: 90%;
+                height: auto;
+                margin: 20px auto;
+                border: 5px solid #17a2b8;
+                border-radius: 10px;
+                box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            }}
+            figcaption {{
+                text-align: center;
+                font-size: 0.9em;
+                color: #6c757d;
+                font-style: italic;
+                margin-top: -10px;
+            }}
+            ul {{
+                padding-left: 20px;
+            }}
+            ul li {{
+                margin-bottom: 10px;
+                color: #343a40;
+            }}
+            footer {{
+                text-align: center;
+                margin-top: 40px;
+                font-size: 0.9em;
+                color: #6c757d;
+            }}
+        </style>
+    </head>
+    <body>
+        {article_html}
+    </body>
+    </html>
+    """
+    with open("podglad.html", "w", encoding="utf-8") as file:
+        file.write(preview_html)
+
 
 def main():
     input_file = "artykul.txt"
@@ -50,7 +201,13 @@ def main():
     print("Zapisuję wynikowy HTML do pliku...")
     save_html_file(output_file, html_content)
 
-    print(f"Zadanie zakończone. Wynik zapisano w pliku {output_file}.")
+    print("Tworzę szablon HTML w szablon.html...")
+    create_template()
+
+    print("Tworzę podgląd artykułu w podglad.html...")
+    create_preview(html_content)
+
+    print(f"Zadanie zakończone.")
 
 if __name__ == "__main__":
     main()
